@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>戸田めぐり デジタルスタンプラリー</title>
+  <style>
+    /* 全体スタイル */
+    :root {
+      --primary-color: #0076a3; /* 戸田市の水辺をイメージしたカラー */
+      --secondary-color: #4caf50;
+      --bg-color: #f4f7f6;
+      --text-color: #333;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      padding-bottom: 40px;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #fff;
+      min-height: 100vh;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    /* 1. ヘッダー */
+    header {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 16px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+
+    .progress-bar-container {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      height: 12px;
+      width: 80%;
+      margin: 6px auto 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      background-color: #ffeb3b;
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    /* メインコンテンツ */
+    main {
+      padding: 16px;
+    }
+
+    .spot-card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .spot-header {
+      background: #eef6f9;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .spot-tag {
+      display: inline-block;
+      background: var(--primary-color);
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+
+    .spot-title {
+      font-size: 1.2rem;
+      color: var(--primary-color);
+    }
+
+    /* 2. 説明文スクロールボックス */
+    .instruction-note {
+      font-size: 0.85rem;
+      color: #666;
+      margin: 12px 16px 6px;
+    }
+
+    .description-box {
+      height: 180px;
+      overflow-y: scroll;
+      border: 2px dashed #bce0fd;
+      background-color: #fafafa;
+      margin: 0 16px 16px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .description-box p {
+      margin-bottom: 12px;
+    }
+
+    .read-complete-badge {
+      display: block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      text-align: center;
+      padding: 8px;
+      border-radius: 6px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    /* 3. アクションボタン */
+    .btn-container {
+      padding: 0 16px 16px;
+    }
+
+    .stamp-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--primary-color);
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .stamp-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .stamp-btn.success {
+      background-color: var(--secondary-color);
+    }
+
+    .status-msg {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* 4. スタンプ台帳 */
+    .stamp-book {
+      margin-top: 30px;
+      background: #f9f9f9;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+    }
+
+    .stamp-book h2 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .stamp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stamp-item {
+      background: white;
+      border: 2px dashed #ccc;
+      border-radius: 50%;
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: #aaa;
+      text-align: center;
+      padding: 6px;
+    }
+
+    .stamp-item.active {
+      border: 2px solid #e91e63;
+      color: #e91e63;
+      background: #fff0f5;
+      font-weight: bold;
+    }
+
+    .stamp-icon {
+      font-size: 1.5rem;
+      margin-bottom: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- ヘッダー -->
+    <header>
+      <h1>戸田めぐり デジタルスタンプラリー</h1>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="progress-text" id="progressText">集めたスタンプ: 0 / 5</div>
+    </header>
+
+    <main>
+      <!-- スポット情報カード -->
+      <div class="spot-card">
+        <div class="spot-header">
+          <span class="spot-tag">スポット 01</span>
+          <h2 class="spot-title" id="spotTitle">戸田公園ボートコース</h2>
+        </div>
+
+        <p class="instruction-note">👇 下の説明文を最後までスクロールして読んでください。</p>
+
+        <!-- スクロール説明文エリア -->
+        <div class="description-box" id="scrollBox">
+          <p><strong>【戸田公園ボートコースの魅力】</strong></p>
+          <p>戸田ボートコースは、昭和15年（1940年）の東京オリンピック開催に向けて建設された歴史ある日本最大級の漕艇場です。</p>
+          <p>その後、昭和39年（1964年）の東京オリンピックでもボート競技会場として使用され、全国から多くの選手が練習に訪れる聖地として知られています。</p>
+          <p>約2,400mに及ぶ直線コースの沿道には美しい桜並木が広がり、春にはお花見スポットとしても地域住民に愛されています。</p>
+          <p>水辺の心地よい風を感じながら、季節の移り変わりを楽しめる戸田市を代表する絶景ポイントです。</p>
+          <div class="read-complete-badge">✅ 説明を最後まで読みました！</div>
+        </div>
+
+        <!-- アクションボタン -->
+        <div class="btn-container">
+          <button id="stampBtn" class="stamp-btn" disabled>説明を最後まで読むと押せます</button>
+          <div id="statusMsg" class="status-msg"></div>
+        </div>
+      </div>
+
+      <!-- スタンプ台帳エリア -->
+      <div class="stamp-book">
+        <h2>あなたのスタンプ帳</h2>
+        <div class="stamp-grid" id="stampGrid">
+          <!-- JSで動的に作成 -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // 定義データ（全スポット一覧）
+    const SPOTS = [
+      { id: 'toda_park', name: '戸田公園', icon: '🚣' },
+      { id: 'saiko_park', name: '彩湖・道満', icon: '🌳' },
+      { id: 'museum', name: '郷土博物館', icon: '🏛️' },
+      { id: 'arakawa', name: '荒川水門', icon: '🌊' },
+      { id: 'ushiroya', name: '後谷公園', icon: '🌸' }
+    ];
+
+    // 現在のスポット（URLパラメータ等で切り替え可、初期値は戸田公園）
+    const CURRENT_SPOT_ID = 'toda_park';
+
+    // UI要素の取得
+    const scrollBox = document.getElementById('scrollBox');
+    const stampBtn = document.getElementById('stampBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const stampGrid = document.getElementById('stampGrid');
+
+    // 1. ユーザーIDとスタンプ状態の初期化（localStorage）
+    function getUserId() {
+      let id = localStorage.getItem('toda_user_id');
+      if (!id) {
+        id = 'user_' + Math.random().toString(36).substring(2, 9);
+        localStorage.setItem('toda_user_id', id);
+      }
+      return id;
+    }
+
+    function getMyStamps() {
+      return JSON.parse(localStorage.getItem('toda_my_stamps') || '[]');
+    }
+
+    // 2. スタンプ帳と進捗バーの描画更新
+    function updateUI() {
+      const myStamps = getMyStamps();
+      const count = myStamps.length;
+      const total = SPOTS.length;
+
+      // 進捗バー
+      const percent = (count / total) * 100;
+      progressBar.style.width = percent + '%';
+      progressText.textContent = `集めたスタンプ: ${count} / ${total}`;
+
+      // スタンプ帳一覧
+      stampGrid.innerHTML = '';
+      SPOTS.forEach(spot => {
+        const isAcquired = myStamps.includes(spot.id);
+        const item = document.createElement('div');
+        item.className = `stamp-item ${isAcquired ? 'active' : ''}`;
+        item.innerHTML = `
+          <div class="stamp-icon">${isAcquired ? '💮' : spot.icon}</div>
+          <div>${spot.name}</div>
+        `;
+        stampGrid.appendChild(item);
+      });
+
+      // 既に獲得済みのスポットかチェック
+      if (myStamps.includes(CURRENT_SPOT_ID)) {
+        stampBtn.disabled = true;
+        stampBtn.textContent = '獲得済みです';
+        stampBtn.classList.add('success');
+      }
+    }
+
+    // 3. スクロール検知
+    scrollBox.addEventListener('scroll', () => {
+      const myStamps = getMyStamps();
+      if (myStamps.includes(CURRENT_SPOT_ID)) return; // 獲得済みなら何もしない
+
+      // 最下部までスクロールした判定（余白誤差5px考慮）
+      if (scrollBox.scrollTop + scrollBox.clientHeight >= scrollBox.scrollHeight - 5) {
+        stampBtn.disabled = false;
+        stampBtn.textContent = 'スタンプを獲得する（GPS確認）';
+      }
+    });
+
+    // 4. ボタン押下時の処理（GPS＋付与）
+    stampBtn.addEventListener('click', () => {
+      stampBtn.disabled = true;
+      stampBtn.textContent = '位置情報を確認中...';
+
+      if (!navigator.geolocation) {
+        alert('お使いの端末は位置情報機能に対応していません。');
+        resetBtn();
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // 本来は座標判定（lat/lng）を行う領域
+          const myStamps = getMyStamps();
+          if (!myStamps.includes(CURRENT_SPOT_ID)) {
+            myStamps.push(CURRENT_SPOT_ID);
+            localStorage.setItem('toda_my_stamps', JSON.stringify(myStamps));
+          }
+
+          statusMsg.style.color = 'green';
+          statusMsg.textContent = '🎉 スタンプを獲得しました！';
+          updateUI();
+        },
+        (error) => {
+          statusMsg.style.color = 'red';
+          statusMsg.textContent = '❌ 位置情報の取得に失敗しました。GPSをオンにしてください。';
+          resetBtn();
+        }
+      );
+    });
+
+    function resetBtn() {
+      stampBtn.disabled = false;
+      stampBtn.textContent = 'スタンプを獲得する（GPS確認）';
+    }
+
+    // 初期化実行
+    getUserId();
+    updateUI();
+  </script>
+</body>
+</html>
